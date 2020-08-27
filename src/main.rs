@@ -189,7 +189,6 @@ fn install_mxpalette_file(palette: Palette) {
 }
 
 fn install_mxmusic_file(music_file_contents: Vec<u8>, file_name: String) {
-	// ensure_data_dir_exists();
 
 	// Load zip archive
 	let mut music_zip = match ZipArchive::new(Cursor::new(music_file_contents)) {
@@ -223,16 +222,6 @@ fn get_mixolumia_dir() -> PathBuf {
 	
 	Path::new(&mixolumia_path).to_owned()
 }
-
-
-// /// Ensures the data directory exists so we don't accidentally
-// fn ensure_data_dir_exists() {
-// 	let mixolumia_dir = get_mixolumia_dir();
-// 	let data_dir = mixolumia_dir.join("data");
-// 	if !data_dir.exists() {
-// 		create_dir_all(data_dir).expect("Error creating mixolumia data directory");
-// 	}
-// }
 
 /// Extracts a file from a zip to a location
 fn extract_file(path: PathBuf, file: &mut ZipFile) {
