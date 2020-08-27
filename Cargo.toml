@@ -11,3 +11,6 @@ configparser = "0.13.2"
 zip = "0.5.6"
 serde_json = "1.0.57"
 serde = { version = "1.0.115", features = ["derive"] }
+
+[build-dependencies]
+winres = "0.1.11"
