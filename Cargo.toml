@@ -12,5 +12,9 @@ zip = "0.5.6"
 serde_json = "1.0.57"
 serde = { version = "1.0.115", features = ["derive"] }
 
-[build-dependencies]
+[target.'cfg(windows)'.dependencies]
+winapi = { version = "0.3", features = ["winuser", "std", "shellapi"] }
+winreg = "0.7.0"
+
+[target.'cfg(windows)'.build-dependencies]
 winres = "0.1.11"

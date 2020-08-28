@@ -1,7 +1,8 @@
 use std::env;
 use std::path::{Path, PathBuf};
-use std::fs::{read, create_dir_all, File};
+use std::fs::{read, create_dir_all, File, write};
 use std::io::{Cursor, copy};
+use std::io::prelude::*;
 
 use configparser::ini::Ini;
 
@@ -9,6 +10,9 @@ use zip::ZipArchive;
 use zip::read::ZipFile;
 
 use serde::Deserialize;
+
+#[cfg(windows)]
+mod windows;
 
 #[derive(Deserialize)]
 struct ModMeta {
@@ -29,7 +33,76 @@ struct Palette {
 const PROGRAM_VERSION: &str = "v0.1"; 
 const MXMOD_FORMAT_VERSION: u8 = 1;
 
+#[cfg(windows)]
 fn main() {
+	let mut args: Vec<String> = env::args().collect();
+	args.remove(0);
+	match args.first() {
+		Some(c) if c.as_str() == "--register_extensions" => {
+			if !windows::is_elevated() {
+				println!("Program must be run as Administrator to register the file extensions");
+				return;
+			}
+
+			match windows::register_file_types() {
+				Err(e) => write(Path::new("./err.log"), format!("Error registering file associations: {}", e)).unwrap(),
+				Ok(_) => println!("File types have been registered!")
+			}
+		},
+		Some(_) => run(),
+		None => if !windows::test_registry() {
+					install();
+					if windows::yes_no_box("mixolumia-mod-installer is not currently registered as the default app for mxmod, mxpalette, and mxmusic files.\nWould you like to make it the default app?").unwrap() {
+						if windows::is_elevated() {
+							match windows::register_file_types() {
+								Err(e) => println!("Error registering file types: {}", e),
+								Ok(_) => println!("File types have been registered!")
+							}
+						} else {
+							windows::elevate()
+						}
+					}
+				}
+	}
+}
+
+#[cfg(windows)]
+fn install() {
+	let local_app_data_dir = env::var("LOCALAPPDATA").expect("Error reading LOCALAPPDATA");
+	let install_dir = Path::new(&local_app_data_dir);
+	let exe_file = env::current_exe().expect("Couldn't get the exe directory");
+	let exe_dir = exe_file.parent().unwrap();
+
+	create_dir_all(install_dir.join("MixolumiaModInstaller")).expect("Error making MixolumiaModInstaller install dir");
+
+	let mut outfile = File::create(install_dir.join("MixolumiaModInstaller/icon.ico")).expect("Error creating file link");
+	outfile.write_all(&read(exe_dir.join("icon.ico")).expect("Error reading icon.ico")).expect("Error writing file");
+
+
+	let mut config = Ini::new();
+	config.set("Options", "mixolumia_install_directory", Some(Path::new(&env::var("APPDATA").unwrap()).join("itch\\apps\\mixolumia").to_str().unwrap().to_owned()));
+	config.write(install_dir.join("MixolumiaModInstaller").join("config.ini").to_str().unwrap()).expect("Error writing config.ini")
+}
+
+
+// TODO: Impliment file extension registration and install for Mac / Linux
+#[cfg(not(windows))]
+fn main() {
+	run();
+}
+
+#[cfg(not(windows))]
+fn install() {
+	let home_dir = env::var("HOME").expect("Error getting home directory");
+	let mixolumia_dir = Path::new(&home_dir).join("Library/Application Support/itch/apps/Mixolumia").join();
+	let install_dir = Path::new(home_dir).join("MixolumiaModInstaller");
+	
+	let mut config = Ini::new();
+	config.set("Options", "mixolumia_install_directory", Some(home_dir));
+	config.write(install_dir.join("config.ini").to_str().unwrap()).expect("Error writing config.ini");
+}
+
+fn run() {
 	println!("Mixolumia mod installer {}", PROGRAM_VERSION);
 
 	let mut args: Vec<String> = env::args().collect();
