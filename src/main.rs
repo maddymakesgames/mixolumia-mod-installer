@@ -30,7 +30,7 @@ struct Palette {
 	colors: Vec<String>
 }
 
-const PROGRAM_VERSION: &str = "v0.1"; 
+const PROGRAM_VERSION: &str = "v0.2"; 
 const MXMOD_FORMAT_VERSION: u8 = 1;
 
 #[cfg(windows)]
