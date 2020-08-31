@@ -94,8 +94,8 @@ fn main() {
 #[cfg(not(windows))]
 fn install() {
 	let home_dir = env::var("HOME").expect("Error getting home directory");
-	let mixolumia_dir = Path::new(&home_dir).join("Library/Application Support/itch/apps/Mixolumia").join();
-	let install_dir = Path::new(home_dir).join("MixolumiaModInstaller");
+	let mixolumia_dir = Path::new(&home_dir).join("Library/Application Support/itch/apps/Mixolumia");
+	let install_dir = Path::new(&home_dir).join("MixolumiaModInstaller");
 	
 	let mut config = Ini::new();
 	config.set("Options", "mixolumia_install_directory", Some(home_dir));
