@@ -6,6 +6,14 @@ Installs .mxmusic, .mxpalette, and .mxmod files.
 `./mixolumia_mod_installer [mxmod / mxmusic / mxpalette file]`<br>
 Or you can just run mixolumia_mod_installer.exe once and it will set it up so that whenever you open a supported file it will install it.
 
+## Installation
+### Windows
+Just run mixolumia_mod_installer.exe once and it will register itself as the handler of mod file types.<br>
+If you move mixolumia_mod_installer.exe you will need to re-run the app to update the registry.
+
+### Mac
+Drag Mixolumia Mod Installer.app into your applications folder and it will register itself as the handler of mod files.
+
 ## File formats
 This program uses 3 special file formats mxmod, mxmusic, and mxpalette<br>
 Information about these formats can be found in the [wiki](https://github.com/maddymakesgames/mixolumia-mod-installer/wiki)
