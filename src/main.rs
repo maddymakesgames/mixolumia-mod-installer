@@ -30,8 +30,8 @@ struct Palette {
 	colors: Vec<String>
 }
 
-const PROGRAM_VERSION: &str = "v0.2"; 
-const MXMOD_FORMAT_VERSION: u8 = 1;
+pub const PROGRAM_VERSION: &str = "v0.2"; 
+pub const MXMOD_FORMAT_VERSION: u8 = 1;
 
 #[cfg(windows)]
 fn main() {
@@ -49,7 +49,7 @@ fn main() {
 				Ok(_) => println!("File types have been registered!")
 			}
 		},
-		Some(_) => run(),
+		Some(_) => run(args),
 		None => if !windows::test_registry() {
 					install();
 					if windows::yes_no_box("mixolumia-mod-installer is not currently registered as the default app for mxmod, mxpalette, and mxmusic files.\nWould you like to make it the default app?").unwrap() {
@@ -84,29 +84,30 @@ fn install() {
 	config.write(install_dir.join("MixolumiaModInstaller").join("config.ini").to_str().unwrap()).expect("Error writing config.ini")
 }
 
-
-// TODO: Impliment file extension registration and install for Mac / Linux
-#[cfg(not(windows))]
+#[cfg(target_os="macos")]
 fn main() {
-	run();
+	let mut args = std::env::args().collect::<Vec<String>>();
+	println!("{:?}", args);
+	args.remove(0);
+	run(args);
 }
 
-#[cfg(not(windows))]
-fn install() {
+
+#[cfg(target_os="macos")]
+pub fn install() {
 	let home_dir = env::var("HOME").expect("Error getting home directory");
-	let mixolumia_dir = Path::new(&home_dir).join("Library/Application Support/itch/apps/Mixolumia");
+	let mixolumia_dir = Path::new(&home_dir).join("Library/Application Support/itch/apps/mixolumia/Mixolumia.app/Contents/Resources");
 	let install_dir = Path::new(&home_dir).join("MixolumiaModInstaller");
 	
+	std::fs::create_dir_all(&install_dir).unwrap();
 	let mut config = Ini::new();
-	config.set("Options", "mixolumia_install_directory", Some(home_dir));
+	config.set("Options", "mixolumia_install_directory", Some(mixolumia_dir.to_str().unwrap().to_owned()));
+	config.set("metadata", "version", Some(PROGRAM_VERSION.to_owned()));
 	config.write(install_dir.join("config.ini").to_str().unwrap()).expect("Error writing config.ini");
 }
 
-fn run() {
+pub fn run(args: Vec<String>) {
 	println!("Mixolumia mod installer {}", PROGRAM_VERSION);
-
-	let mut args: Vec<String> = env::args().collect();
-	args.remove(0);
 
 	let mxmod_file = match args.get(0) {
 		Some(val) => val,

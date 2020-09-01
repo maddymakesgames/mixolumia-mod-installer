@@ -13,7 +13,7 @@ Information about these formats can be found in the [wiki](https://github.com/ma
 ## Planned features
 - [x] Allow quick installation of music packs and palettes
 - [x] Autoassign mixolumia-mod-installer as the default way to open its file formats
-  - [ ] Support file extension opening on Mac
+  - [X] Support file extension opening on Mac
 - [ ] Allow texture mods via editing the data.win file
 - [ ] Allow string edits via editing mixolumia.exe
 

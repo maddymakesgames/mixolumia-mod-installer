@@ -1,1 +1,4 @@
 /target
+*.a
+*.h
+.DS_Store
