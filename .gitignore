@@ -2,3 +2,4 @@
 *.a
 *.h
 .DS_Store
+mac_build/
