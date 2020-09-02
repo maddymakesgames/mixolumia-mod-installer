@@ -9,7 +9,6 @@ description = "A mod installer for Mixolumia"
 
 [lib]
 name = "mod_installer"
-path = "src/mac_lib.rs"
 crate-type = ["staticlib", "cdylib"]
 
 [dependencies]
