@@ -14,13 +14,21 @@ use serde::Deserialize;
 #[cfg(windows)]
 mod windows;
 
+mod texture;
+
+/// Implements a wrapper round the data.win and data.ios files for easy reading
+mod data;
+
+use crate::data::DataContainer;
+
 #[derive(Deserialize)]
 struct ModMeta {
 	name: String,
 	author: String,
 	version: u8,
 	palette: bool,
-	music: bool
+	music: bool,
+	texture: bool
 }
 
 #[derive(Deserialize)]
@@ -35,6 +43,12 @@ pub const MXMOD_FORMAT_VERSION: u8 = 1;
 
 #[cfg(windows)]
 fn main() {
+
+	let contents = read(Path::new("data.win")).unwrap();
+	let dc = crate::data::DataContainer::new(contents).unwrap();
+	println!("{:?}", dc);
+	return;
+
 	let mut args: Vec<String> = env::args().collect();
 	args.remove(0);
 	match args.first() {
@@ -288,6 +302,7 @@ fn install_mxmusic_file(music_file_contents: Vec<u8>, file_name: String) {
 }
 
 /// Gets the directory to install mixolumia files to
+#[inline(always)]
 fn get_mixolumia_dir() -> PathBuf {
 	#[cfg(windows)]
 	let mixolumia_path = format!("{}\\Mixolumia", env::var("LOCALAPPDATA").expect("Error reading LOCALAPPDATA"));

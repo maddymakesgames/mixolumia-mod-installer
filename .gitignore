@@ -3,3 +3,4 @@
 *.h
 .DS_Store
 mac_build/
+Cargo.lock
